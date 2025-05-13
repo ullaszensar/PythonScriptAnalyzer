@@ -1,6 +1,6 @@
-# PyTable Analyzer
+# PyTable Analyzer | Zensar
 
-A web application that analyzes Python and Shell scripts to identify PyTable tables and fields, organized by file and folder structure.
+A web application developed by Zensar Technologies that analyzes Python and Shell scripts to identify PyTable tables and fields, organized by file and folder structure.
 
 ## Features
 
@@ -183,10 +183,12 @@ If you prefer using Docker:
   - Consider analyzing specific subfolders rather than the entire project
   - Increase the timeout settings if needed
 
+## About Zensar
+
+Zensar is a leading digital solutions and technology services company that specializes in partnering with global organizations across industries on their Digital Transformation journey. A technology partner of choice, backed by strong track-record of innovation; credible investment in Digital solutions; assertion of commitment to client's success, Zensar's comprehensive range of digital and technology services and solutions enable its customers to achieve new thresholds of business performance.
+
 ## License
 
-[MIT License](LICENSE)
+Proprietary - Copyright © 2025 Zensar Technologies. All rights reserved.
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+This software is the confidential and proprietary information of Zensar Technologies. You shall not disclose such confidential information and shall use it only in accordance with the terms of the license agreement you entered into with Zensar Technologies.
