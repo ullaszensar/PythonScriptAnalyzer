@@ -1,28 +1,31 @@
-1. Application Name
-Arrangement Manager - AM Main
-2. What Details Are Considered and Analyzed
+Conclusion
+Yes, data is being fetched directly from services (GAR, GeoAcct, GCCP).
 
-The analysis focused on identifying whether demographic or personal data is being processed or fetched by the application. 
-The following Java files were reviewed:
-- PaymentManagement.java
-- EnrollmentManagement.java and EnrollmentManagementV2.java
-- GetPaymentEligibilityManagement.java
-- ActivityLogAction.java
-- ReturnRuleAction.java
-- UserAction.java
+No personally identifiable demographic data (name, email, DOB, address) is being fetched directly from services.
 
-Additionally, the batch file structure from Triumph was reviewed for data elements related to customer demographics.
-Modules such as am-core, am-config, and am-service were also inspected for business logic and integration points.
+Enrollment.java is the only class with direct demographic-like fields, but it does not perform external service fetches.
 
-3. What Are the Impacts of Demographic Data in the Application
+Therefore, the application does interact with external services, but none of them return raw demographic data.
 
-There is no direct impact identified in terms of processing or fetching demographic data from legacy tables.
-The application uses batch uploads to C360 for demographic information from Triumph (US and CA). 
-No real-time demographic data is processed or exposed through the Java classes or service modules.
+Classification remains: Impacted, due to indirect demographic indicators and sensitive identifiers.
 
-4. Demographics Data Presence in the Application and Its Impact
+Check: Is Any Data Fetched Directly from a Service?
+Yes, AM Eligibility fetches data directly from the following sources/services:
 
-Across all reviewed files and modules, no demographic data is processed directly or fetched dynamically. 
-All demographic updates are managed via batch files mapped to C360.
-Hence, the application is classified as **Non-Impacted** under the demographic data handling scope.
+GAR API
 
+URL: https://gardc.aexp.com/gar-demographics-api...
+
+Purpose: Account membership and card selection
+
+Analysis: While this API is named “demographics”, the data fetched pertains to account type and membership, not personal demographic data (like name, DOB, email).
+
+GeoAcct
+
+Provides account type information for US/CA/UK.
+
+Used to determine eligibility based on account classification (INDIVIDUAL, SMALL_BUSINESS).
+
+GCCP
+
+Provides corporate account information for US customers.
