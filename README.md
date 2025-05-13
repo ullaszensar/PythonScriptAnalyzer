@@ -54,36 +54,134 @@ for row in table.iterrows():
 
 ## Installation
 
+### Prerequisites
+
+- Python 3.6 or higher
+- pip (Python package installer)
+- Git (optional, for cloning the repository)
+
+### Method 1: Using Git
+
 1. Clone this repository:
    ```bash
    git clone https://github.com/yourusername/pytable-analyzer.git
    cd pytable-analyzer
    ```
 
-2. Install dependencies:
+2. Create a virtual environment (recommended):
    ```bash
+   # On Windows
+   python -m venv venv
+   venv\Scripts\activate
+
+   # On macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. Install the required dependencies:
+   ```bash
+   pip install -e .
+   # Or if you prefer to use the requirements file
    pip install -r requirements.txt
    ```
 
+### Method 2: Manual Download
+
+1. Download the ZIP file of this project from GitHub
+2. Extract the contents to a directory of your choice
+3. Open a terminal/command prompt and navigate to that directory
+4. Create a virtual environment and install dependencies as shown in steps 2-3 above
+
+### Method 3: Using Docker (Optional)
+
+If you prefer using Docker:
+
+1. Build the Docker image:
+   ```bash
+   docker build -t pytable-analyzer .
+   ```
+
+2. Run the container:
+   ```bash
+   docker run -p 5000:5000 pytable-analyzer
+   ```
+
+### Configuration
+
+1. (Optional) Set environment variables:
+   ```bash
+   # On Windows
+   set SESSION_SECRET=your_secret_key
+
+   # On macOS/Linux
+   export SESSION_SECRET=your_secret_key
+   ```
+
+2. If no secret key is provided, a default development key will be used (not recommended for production)
+
 ## Usage
+
+### Starting the Application
 
 1. Start the application:
    ```bash
+   # Make sure your virtual environment is activated
    python main.py
+   
+   # Alternatively, use Flask directly
+   flask run --host=0.0.0.0 --port=5000
+   
+   # Or with gunicorn in production
+   gunicorn --bind 0.0.0.0:5000 main:app
    ```
 
 2. Open your browser and go to `http://localhost:5000`
 
+### Analyzing Code
+
 3. Choose one of the three analysis methods:
    - **Analyze Folder**: Enter a path to recursively scan for Python and Shell scripts
+     - Example: `/path/to/your/project`
+     - The analyzer will walk through all subdirectories
+     - Only `.py`, `.sh`, and `.bash` files will be analyzed
+   
    - **Upload Files**: Select one or more files to upload and analyze
+     - You can select multiple files by holding Ctrl/Cmd while selecting
+     - Maximum upload size is 16MB total
+   
    - **Paste Code**: Input code directly into the text area
+     - Useful for quick analysis of code snippets
+     - Enter a filename with appropriate extension (.py/.sh) to help with parsing
 
-4. Click "Analyze Code" to process the files and view the results
+4. Configure analysis options:
+   - Choose whether to exclude temporary tables
+   - This helps focus on persistent data structures
 
-5. Use the search functionality to filter tables and fields
+5. Click "Analyze Code" to process the files and view the results
 
-6. Download the results as JSON for further processing
+### Working with Results
+
+6. View results organized by folder structure
+   - Files are grouped by their directory
+   - Tables are listed under each file
+   - Fields are displayed in a table format
+
+7. Use the search functionality to filter tables and fields
+   - Search for specific table names or field types
+   - Results update dynamically as you type
+
+8. Download the results as JSON for further processing or integration with other tools
+
+### Troubleshooting
+
+- If you encounter permission errors when analyzing folders:
+  - Ensure the application has read access to the specified directory
+  - Try using absolute paths instead of relative paths
+  
+- For large codebases:
+  - Consider analyzing specific subfolders rather than the entire project
+  - Increase the timeout settings if needed
 
 ## License
 
