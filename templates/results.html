@@ -39,97 +39,217 @@
                     No tables or fields match your search criteria.
                 </div>
 
-                <!-- Results organized by file -->
-                {% for filename, file_result in results.items() %}
-                <div class="card mb-4 file-item fade-in">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                {% if filename.endswith('.py') %}
-                                <i class="bi bi-filetype-py me-2"></i>
-                                {% elif filename.endswith('.sh') or filename.endswith('.bash') %}
-                                <i class="bi bi-terminal me-2"></i>
-                                {% else %}
-                                <i class="bi bi-file-code me-2"></i>
-                                {% endif %}
-                                {{ filename }}
-                            </h5>
-                            <span class="badge bg-secondary">
-                                {% if file_result.tables|length == 1 %}
-                                1 table
-                                {% else %}
-                                {{ file_result.tables|length }} tables
-                                {% endif %}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        {% if file_result.error is defined %}
-                        <div class="alert alert-danger">
-                            <i class="bi bi-exclamation-circle me-2"></i>
-                            Error parsing file: {{ file_result.error }}
-                        </div>
-                        {% elif file_result.tables|length == 0 %}
-                        <div class="alert alert-warning">
-                            <i class="bi bi-info-circle me-2"></i>
-                            No PyTable tables detected in this file.
-                        </div>
-                        {% else %}
-                        <!-- Tables in this file -->
-                        {% for table_name, table in file_result.tables.items() %}
-                        <div class="table-item mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5 class="table-name mb-0">{{ table_name }}</h5>
-                                <div>
-                                    {% if table.variable_name %}
-                                    <span class="badge bg-secondary me-2">var: {{ table.variable_name }}</span>
+                <!-- Results organized by folder structure -->
+                {% if folder_structure is defined %}
+                    {% for folder_path, folder_files in folder_structure.items() %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-dark">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-folder me-2"></i>
+                                    {% if folder_path %}
+                                        {{ folder_path }}
+                                    {% else %}
+                                        [Root]
                                     {% endif %}
-                                    <span class="badge bg-info">
-                                        {% if table.fields|length == 1 %}
-                                        1 field
-                                        {% else %}
-                                        {{ table.fields|length }} fields
+                                </h5>
+                                <span class="badge bg-primary">
+                                    {% if folder_files|length == 1 %}
+                                        1 file
+                                    {% else %}
+                                        {{ folder_files|length }} files
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Files in this folder -->
+                            {% for filename, file_result in folder_files.items() %}
+                            <div class="card mb-4 file-item fade-in">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            {% if filename.endswith('.py') %}
+                                            <i class="bi bi-filetype-py me-2"></i>
+                                            {% elif filename.endswith('.sh') or filename.endswith('.bash') %}
+                                            <i class="bi bi-terminal me-2"></i>
+                                            {% else %}
+                                            <i class="bi bi-file-code me-2"></i>
+                                            {% endif %}
+                                            {{ filename }}
+                                        </h5>
+                                        <span class="badge bg-secondary">
+                                            {% if file_result.tables|length == 1 %}
+                                            1 table
+                                            {% else %}
+                                            {{ file_result.tables|length }} tables
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    {% if file_result.error is defined %}
+                                    <div class="alert alert-danger">
+                                        <i class="bi bi-exclamation-circle me-2"></i>
+                                        Error parsing file: {{ file_result.error }}
+                                    </div>
+                                    {% elif file_result.tables|length == 0 %}
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        No PyTable tables detected in this file.
+                                    </div>
+                                    {% else %}
+                                    <!-- Tables in this file -->
+                                    {% for table_name, table in file_result.tables.items() %}
+                                    <div class="table-item mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <h5 class="table-name mb-0">{{ table_name }}</h5>
+                                            <div>
+                                                {% if table.variable_name %}
+                                                <span class="badge bg-secondary me-2">var: {{ table.variable_name }}</span>
+                                                {% endif %}
+                                                <span class="badge bg-info">
+                                                    {% if table.fields|length == 1 %}
+                                                    1 field
+                                                    {% else %}
+                                                    {{ table.fields|length }} fields
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if table.is_temporary %}
+                                        <div class="alert alert-warning py-1 px-2 mb-2">
+                                            <small><i class="bi bi-clock-history me-1"></i>Temporary table</small>
+                                        </div>
                                         {% endif %}
-                                    </span>
+                                        
+                                        {% if table.fields|length > 0 %}
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Field Name</th>
+                                                        <th>Type</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for field in table.fields %}
+                                                    <tr class="field-item">
+                                                        <td class="field-name">{{ field.name }}</td>
+                                                        <td class="field-type">{{ field.type or "unknown" }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-secondary py-2">
+                                            <small>No fields detected for this table</small>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    {% endfor %}
+                                    {% endif %}
                                 </div>
                             </div>
-                            
-                            {% if table.is_temporary %}
-                            <div class="alert alert-warning py-1 px-2 mb-2">
-                                <small><i class="bi bi-clock-history me-1"></i>Temporary table</small>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Fallback to flat file list if folder structure not available -->
+                    {% for filename, file_result in results.items() %}
+                    <div class="card mb-4 file-item fade-in">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    {% if filename.endswith('.py') %}
+                                    <i class="bi bi-filetype-py me-2"></i>
+                                    {% elif filename.endswith('.sh') or filename.endswith('.bash') %}
+                                    <i class="bi bi-terminal me-2"></i>
+                                    {% else %}
+                                    <i class="bi bi-file-code me-2"></i>
+                                    {% endif %}
+                                    {{ filename }}
+                                </h5>
+                                <span class="badge bg-secondary">
+                                    {% if file_result.tables|length == 1 %}
+                                    1 table
+                                    {% else %}
+                                    {{ file_result.tables|length }} tables
+                                    {% endif %}
+                                </span>
                             </div>
-                            {% endif %}
-                            
-                            {% if table.fields|length > 0 %}
-                            <div class="table-responsive">
-                                <table class="table table-sm table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Field Name</th>
-                                            <th>Type</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for field in table.fields %}
-                                        <tr class="field-item">
-                                            <td class="field-name">{{ field.name }}</td>
-                                            <td class="field-type">{{ field.type or "unknown" }}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+                        </div>
+                        <div class="card-body">
+                            {% if file_result.error is defined %}
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-circle me-2"></i>
+                                Error parsing file: {{ file_result.error }}
+                            </div>
+                            {% elif file_result.tables|length == 0 %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-info-circle me-2"></i>
+                                No PyTable tables detected in this file.
                             </div>
                             {% else %}
-                            <div class="alert alert-secondary py-2">
-                                <small>No fields detected for this table</small>
+                            <!-- Tables in this file -->
+                            {% for table_name, table in file_result.tables.items() %}
+                            <div class="table-item mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="table-name mb-0">{{ table_name }}</h5>
+                                    <div>
+                                        {% if table.variable_name %}
+                                        <span class="badge bg-secondary me-2">var: {{ table.variable_name }}</span>
+                                        {% endif %}
+                                        <span class="badge bg-info">
+                                            {% if table.fields|length == 1 %}
+                                            1 field
+                                            {% else %}
+                                            {{ table.fields|length }} fields
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                {% if table.is_temporary %}
+                                <div class="alert alert-warning py-1 px-2 mb-2">
+                                    <small><i class="bi bi-clock-history me-1"></i>Temporary table</small>
+                                </div>
+                                {% endif %}
+                                
+                                {% if table.fields|length > 0 %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Field Name</th>
+                                                <th>Type</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for field in table.fields %}
+                                            <tr class="field-item">
+                                                <td class="field-name">{{ field.name }}</td>
+                                                <td class="field-type">{{ field.type or "unknown" }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-secondary py-2">
+                                    <small>No fields detected for this table</small>
+                                </div>
+                                {% endif %}
                             </div>
+                            {% endfor %}
                             {% endif %}
                         </div>
-                        {% endfor %}
-                        {% endif %}
                     </div>
-                </div>
-                {% endfor %}
+                    {% endfor %}
+                {% endif %}
                 
                 {% if results|length == 0 %}
                 <div class="alert alert-warning">

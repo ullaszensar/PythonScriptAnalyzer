@@ -7,11 +7,27 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadForm.addEventListener('submit', function(e) {
             const fileInput = document.getElementById('file-input');
             const sourceInput = document.getElementById('source-input');
+            const folderInput = document.getElementById('folder-input');
             
-            // Validate at least one input method is provided
-            if (fileInput.files.length === 0 && (!sourceInput.value || sourceInput.value.trim() === '')) {
+            // Get the active tab
+            const folderTab = document.getElementById('folder-tab');
+            const uploadTab = document.getElementById('upload-tab');
+            const pasteTab = document.getElementById('paste-tab');
+            
+            const isActiveFolderTab = folderTab && folderTab.classList.contains('active');
+            const isActiveUploadTab = uploadTab && uploadTab.classList.contains('active');
+            const isActivePasteTab = pasteTab && pasteTab.classList.contains('active');
+            
+            // Validate based on active tab
+            if (isActiveFolderTab && (!folderInput.value || folderInput.value.trim() === '')) {
                 e.preventDefault();
-                showAlert('Please either upload files or paste code to analyze', 'danger');
+                showAlert('Please enter a folder path to analyze', 'danger');
+            } else if (isActiveUploadTab && fileInput.files.length === 0) {
+                e.preventDefault();
+                showAlert('Please select files to upload', 'danger');
+            } else if (isActivePasteTab && (!sourceInput.value || sourceInput.value.trim() === '')) {
+                e.preventDefault();
+                showAlert('Please paste code to analyze', 'danger');
             }
         });
     }
